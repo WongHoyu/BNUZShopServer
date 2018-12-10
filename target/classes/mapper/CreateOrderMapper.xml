@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?> <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wong.pay.dao.CreateOrderMapper">
+    <insert id="insertOrder" parameterType="Orders">
+        INSERT INTO Orders (out_trade_no, total_amount, seller_id, body, create_time)
+        VALUES(#{outTradeNo}, #{totalAmount}, #{sellerId}, #{body}, #{createTime});
+    </insert>
+
+    <select id="checkOrder" resultType="Orders" parameterType="Orders">
+        select * from Orders
+        where
+        out_trade_no = #{outTradeNo} AND
+        total_amount = #{totalAmount} AND
+        seller_id = #{sellerId} AND
+        deleted = 0
+    </select>
+
+    <update id="updateOrderFinishedTime" parameterType="String">
+        UPDATE Orders
+        SET finished_time = #{finishedTime}
+        where out_trade_no = #{outTradeNo};
+    </update>
+</mapper>
