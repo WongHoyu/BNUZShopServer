@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?> <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wong.pay.dao.NotificationMapper">
+    <update id="updateOrderFinishedTime" parameterType="String">
+        UPDATE Orders
+        SET finished_time = #{finishedTime}
+        where out_trade_no = #{outTradeNo};
+    </update>
+
+    <select id="checkOrder" resultType="Orders" parameterType="Orders">
+        select * from Orders
+        where
+        out_trade_no = #{outTradeNo} AND
+        total_amount = #{totalAmount} AND
+        seller_id = #{sellerId} AND
+        deleted = 0
+    </select>
+</mapper>

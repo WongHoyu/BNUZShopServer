@@ -7,5 +7,8 @@ import org.springframework.stereotype.Repository;
 @Mapper
 @Repository
 public interface RefundOrderMapper {
+
+    // 退款用
     void deleteOrder(@Param("outTradeNo") String outTradeNo, @Param("deletedTime") String deletedTime);
+
 }

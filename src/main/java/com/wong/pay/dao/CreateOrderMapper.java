@@ -9,11 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CreateOrderMapper {
 
+    // 持久化订单
     void insertOrder(@Param("outTradeNo") String outTradeNo, @Param("totalAmount") String totalAmount, @Param("sellerId") String sellerId, @Param("body") String body, @Param("createTime") String createTime);
 
-    Orders checkOrder(@Param("outTradeNo") String outTradeNo, @Param("totalAmount") String totalAmount, @Param("sellerId") String sellerId);
-
-    void deleteOrder(@Param("outTradeNo") String outTradeNo, @Param("deletedTime") String deletedTime);
-
-    void updateOrderFinishedTime(@Param("outTradeNo") String outTradeNo, @Param("finishedTime") String finishedTime);
 }

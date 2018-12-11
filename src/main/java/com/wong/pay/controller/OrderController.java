@@ -2,6 +2,7 @@ package com.wong.pay.controller;
 
 import com.wong.pay.domain.Orders;
 import com.wong.pay.service.impl.CreateOrderServiceImpl;
+import com.wong.pay.service.impl.NotificationServiceImpl;
 import com.wong.pay.service.impl.RefundOrderServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,11 +17,11 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping()
 public class OrderController {
 
-    @Autowired
     private CreateOrderServiceImpl createOrderService;
 
-    @Autowired
     private RefundOrderServiceImpl refundOrderService;
+
+    private NotificationServiceImpl notificationService;
 
 
     /**
@@ -34,10 +35,12 @@ public class OrderController {
     public String addOrder(String body, String totalAmount) {
         Orders orders = new Orders(body, totalAmount);
 
+        // 获取 CreateOrderServiceImpl 实例
+        CreateOrderServiceImpl createOrderService = getCreateOrderService();
+
         // 处理订单
         return createOrderService.addOrder(orders);
     }
-
 
 
     /**
@@ -48,8 +51,11 @@ public class OrderController {
      * @return
      */
     @RequestMapping(value = "asyncNotify", method = RequestMethod.POST)
-    public String asyncNotifyOrder(HttpServletRequest request,HttpServletResponse response) {
-        return createOrderService.asyncNotifyCheck(request, response);
+    public String asyncNotifyOrder(HttpServletRequest request, HttpServletResponse response) {
+        // 获取 NotificationServiceImpl 实例
+        NotificationServiceImpl notificationService = getNotificationService();
+
+        return notificationService.asyncNotifyCheck(request, response);
     }
 
 
@@ -60,8 +66,11 @@ public class OrderController {
      * @param response
      */
     @RequestMapping(value = "syncNotify")
-    public void syncNotifyOrder(HttpServletRequest request,HttpServletResponse response) {
-        createOrderService.syncNotify(request, response);
+    public void syncNotifyOrder(HttpServletRequest request, HttpServletResponse response) {
+        // 获取 NotificationServiceImpl 实例
+        NotificationServiceImpl notificationService = getNotificationService();
+
+        notificationService.syncNotify(request, response);
     }
 
 
@@ -74,10 +83,38 @@ public class OrderController {
      */
     @RequestMapping(value = "refund")
     public String refundOrder(String outTradeNo, String totalMount) {
+        // 获取 RefundOrderServiceImpl 实例
+        RefundOrderServiceImpl refundOrderService = getRefundOrderService();
+
         return refundOrderService.refundOrder(outTradeNo, totalMount);
 
     }
 
 
+    private CreateOrderServiceImpl getCreateOrderService() {
+        return createOrderService;
+    }
 
+    @Autowired
+    private void setCreateOrderService(CreateOrderServiceImpl createOrderService) {
+        this.createOrderService = createOrderService;
+    }
+
+    private RefundOrderServiceImpl getRefundOrderService() {
+        return refundOrderService;
+    }
+
+    @Autowired
+    private void setRefundOrderService(RefundOrderServiceImpl refundOrderService) {
+        this.refundOrderService = refundOrderService;
+    }
+
+    private NotificationServiceImpl getNotificationService() {
+        return notificationService;
+    }
+
+    @Autowired
+    private void setNotificationService(NotificationServiceImpl notificationService) {
+        this.notificationService = notificationService;
+    }
 }
