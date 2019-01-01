@@ -12,10 +12,12 @@ import com.wong.pay.service.CreateOrderService;
 import com.wong.pay.util.alipay.AlipayConfig;
 import com.wong.pay.util.alipay.AlipayUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
@@ -24,7 +26,7 @@ import java.util.Map;
 @Service
 public class CreateOrderServiceImpl implements CreateOrderService {
 
-    @Autowired
+    @Resource
     CreateOrderMapper createOrderMapper;
 
 
@@ -34,16 +36,14 @@ public class CreateOrderServiceImpl implements CreateOrderService {
      * @param orders
      * @return
      */
-    @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public String addOrder(Orders orders) {
-        // 持久化订单
+    @Async("createOrderExecutor")
+    public void persistenceOrder(Orders orders) {
         createOrderMapper.insertOrder(orders.getOutTradeNo(), orders.getTotalAmount(), orders.getSellerId(), orders.getBody(), orders.getCreateTime());
-        return getOrderString(orders);
     }
 
 
-    private String getOrderString(Orders orders) {
+    public String getOrderString(Orders orders) {
 
         // 支付宝自动加签后，返回给前端处理
         String orderString = "";

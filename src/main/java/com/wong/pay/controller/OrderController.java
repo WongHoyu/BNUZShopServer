@@ -9,18 +9,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 //证明是controller层并且返回json
 @RestController
-@RequestMapping()
 public class OrderController {
 
+    @Resource
     private CreateOrderServiceImpl createOrderService;
 
+    @Resource
     private RefundOrderServiceImpl refundOrderService;
 
+    @Resource
     private NotificationServiceImpl notificationService;
 
 
@@ -35,11 +38,11 @@ public class OrderController {
     public String addOrder(String body, String totalAmount) {
         Orders orders = new Orders(body, totalAmount);
 
-        // 获取 CreateOrderServiceImpl 实例
-        CreateOrderServiceImpl createOrderService = getCreateOrderService();
+        // 持久化订单
+        createOrderService.persistenceOrder(orders);
 
         // 处理订单
-        return createOrderService.addOrder(orders);
+        return createOrderService.getOrderString(orders);
     }
 
 
@@ -52,9 +55,6 @@ public class OrderController {
      */
     @RequestMapping(value = "asyncNotify", method = RequestMethod.POST)
     public String asyncNotifyOrder(HttpServletRequest request, HttpServletResponse response) {
-        // 获取 NotificationServiceImpl 实例
-        NotificationServiceImpl notificationService = getNotificationService();
-
         return notificationService.asyncNotifyCheck(request, response);
     }
 
@@ -67,9 +67,6 @@ public class OrderController {
      */
     @RequestMapping(value = "syncNotify")
     public void syncNotifyOrder(HttpServletRequest request, HttpServletResponse response) {
-        // 获取 NotificationServiceImpl 实例
-        NotificationServiceImpl notificationService = getNotificationService();
-
         notificationService.syncNotify(request, response);
     }
 
@@ -83,38 +80,8 @@ public class OrderController {
      */
     @RequestMapping(value = "refund")
     public String refundOrder(String outTradeNo, String totalMount) {
-        // 获取 RefundOrderServiceImpl 实例
-        RefundOrderServiceImpl refundOrderService = getRefundOrderService();
-
         return refundOrderService.refundOrder(outTradeNo, totalMount);
 
     }
 
-
-    private CreateOrderServiceImpl getCreateOrderService() {
-        return createOrderService;
-    }
-
-    @Autowired
-    private void setCreateOrderService(CreateOrderServiceImpl createOrderService) {
-        this.createOrderService = createOrderService;
-    }
-
-    private RefundOrderServiceImpl getRefundOrderService() {
-        return refundOrderService;
-    }
-
-    @Autowired
-    private void setRefundOrderService(RefundOrderServiceImpl refundOrderService) {
-        this.refundOrderService = refundOrderService;
-    }
-
-    private NotificationServiceImpl getNotificationService() {
-        return notificationService;
-    }
-
-    @Autowired
-    private void setNotificationService(NotificationServiceImpl notificationService) {
-        this.notificationService = notificationService;
-    }
 }

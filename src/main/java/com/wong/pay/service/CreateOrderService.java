@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletResponse;
 @Service
 public interface CreateOrderService {
     // 将订单持久化
-    String addOrder(Orders orders);
+    void persistenceOrder(Orders orders);
 
+    // 打包订单
+    String getOrderString(Orders orders);
 }
